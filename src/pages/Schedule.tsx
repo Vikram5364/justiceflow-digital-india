@@ -23,8 +23,15 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { ChevronLeft, ChevronRight, Plus } from "lucide-react";
 
-// Import correct DayPicker component types
-import { DayContentProps } from "react-day-picker";
+// Import the correct type
+import { DayContent } from "react-day-picker";
+import type { DayContentProps as RDPDayContentProps } from "react-day-picker";
+
+// Extend the DayContentProps type to include className and children
+interface ExtendedDayContentProps extends RDPDayContentProps {
+  className?: string;
+  children?: React.ReactNode;
+}
 
 // Mock data
 const hearings = [
@@ -161,16 +168,18 @@ const Schedule = () => {
                     hasHearing: (date) => hasHearings(date),
                   }}
                   components={{
-                    Day: (props: DayContentProps) => {
+                    Day: (props) => {
+                      // Make sure props is not null and has a date
                       if (!props || !props.date) {
-                        return null;
+                        return <DayContent {...props} />;
                       }
                       
+                      // Cast props to include the className and children properties
+                      const extendedProps = props as ExtendedDayContentProps;
+                      
                       return (
-                        <div
-                          className={cn("relative", props.className)}
-                        >
-                          {props.children}
+                        <div className={cn("relative", extendedProps.className)}>
+                          {extendedProps.children}
                           {hasHearings(props.date) && (
                             <div className="absolute w-1 h-1 bg-primary rounded-full bottom-1 left-1/2 transform -translate-x-1/2" />
                           )}
