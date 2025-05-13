@@ -25,13 +25,7 @@ import { ChevronLeft, ChevronRight, Plus } from "lucide-react";
 
 // Import the correct type
 import { DayContent } from "react-day-picker";
-import type { DayContentProps as RDPDayContentProps } from "react-day-picker";
-
-// Extend the DayContentProps type to include className and children
-interface ExtendedDayContentProps extends RDPDayContentProps {
-  className?: string;
-  children?: React.ReactNode;
-}
+import type { DayContentProps } from "react-day-picker";
 
 // Mock data
 const hearings = [
@@ -108,6 +102,26 @@ const hasHearings = (date: Date) => {
   );
 };
 
+// Create a custom day component that handles the dot indicator
+const CustomDay = (props: DayContentProps) => {
+  // Safely check if props and date exist
+  if (!props || !props.date) {
+    return <DayContent {...props} />;
+  }
+  
+  // Get the date from props
+  const { date } = props;
+  
+  return (
+    <div className="relative">
+      <DayContent {...props} />
+      {hasHearings(date) && (
+        <div className="absolute w-1 h-1 bg-primary rounded-full bottom-1 left-1/2 transform -translate-x-1/2" />
+      )}
+    </div>
+  );
+};
+
 const Schedule = () => {
   const [selected, setSelected] = useState<Date | undefined>(new Date());
   const [selectedType, setSelectedType] = useState<string>("All");
@@ -168,24 +182,7 @@ const Schedule = () => {
                     hasHearing: (date) => hasHearings(date),
                   }}
                   components={{
-                    Day: (props) => {
-                      // Make sure props is not null and has a date
-                      if (!props || !props.date) {
-                        return <DayContent {...props} />;
-                      }
-                      
-                      // Cast props to include the className and children properties
-                      const extendedProps = props as ExtendedDayContentProps;
-                      
-                      return (
-                        <div className={cn("relative", extendedProps.className)}>
-                          {extendedProps.children}
-                          {hasHearings(props.date) && (
-                            <div className="absolute w-1 h-1 bg-primary rounded-full bottom-1 left-1/2 transform -translate-x-1/2" />
-                          )}
-                        </div>
-                      );
-                    },
+                    Day: CustomDay
                   }}
                 />
               </div>

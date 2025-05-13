@@ -1,149 +1,136 @@
 
 import { Link, useLocation } from "react-router-dom";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
-import { 
-  LayoutDashboard, 
-  Gavel, 
-  Calendar, 
-  BarChart3, 
-  Settings,
-  Users,
+import {
+  LayoutDashboard,
   FileText,
+  Calendar,
+  BarChart2,
+  Video,
+  User,
+  Scale,
+  Book,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { useLanguage } from "@/hooks/use-language";
 
 interface SidebarProps {
   isOpen: boolean;
-  setIsOpen: (isOpen: boolean) => void;
+  setIsOpen: (open: boolean) => void;
 }
-
-interface SidebarItemProps {
-  icon: React.ReactNode;
-  label: string;
-  href: string;
-  isActive: boolean;
-  isOpen: boolean;
-}
-
-const SidebarItem = ({ icon, label, href, isActive, isOpen }: SidebarItemProps) => {
-  return (
-    <Link
-      to={href}
-      className={cn(
-        "flex items-center gap-3 rounded-lg px-3 py-2 transition-all",
-        isActive 
-          ? "bg-sidebar-accent text-sidebar-accent-foreground" 
-          : "text-sidebar-foreground hover:bg-sidebar-accent/50 hover:text-sidebar-accent-foreground"
-      )}
-    >
-      <div className="flex h-6 w-6 items-center justify-center">
-        {icon}
-      </div>
-      {isOpen && <span>{label}</span>}
-    </Link>
-  );
-};
 
 const Sidebar = ({ isOpen, setIsOpen }: SidebarProps) => {
   const location = useLocation();
-  const pathname = location.pathname;
+  const { t } = useLanguage();
+
+  const navItems = [
+    {
+      title: t("dashboard"),
+      icon: <LayoutDashboard className="h-5 w-5" />,
+      href: "/",
+    },
+    {
+      title: t("cases"),
+      icon: <FileText className="h-5 w-5" />,
+      href: "/cases",
+    },
+    {
+      title: t("schedule"),
+      icon: <Calendar className="h-5 w-5" />,
+      href: "/schedule",
+    },
+    {
+      title: t("analytics"),
+      icon: <BarChart2 className="h-5 w-5" />,
+      href: "/analytics",
+    },
+    {
+      title: t("virtualCourtroom"),
+      icon: <Video className="h-5 w-5" />,
+      href: "/virtual-courtroom",
+    },
+    {
+      title: "Legal Research",
+      icon: <Book className="h-5 w-5" />,
+      href: "/legal-research",
+    },
+    {
+      title: t("personal"),
+      icon: <User className="h-5 w-5" />,
+      href: "/personal",
+    },
+  ];
 
   return (
-    <>
-      {/* Mobile overlay */}
-      {isOpen && (
-        <div 
-          className="fixed inset-0 z-40 bg-black bg-opacity-50 lg:hidden" 
-          onClick={() => setIsOpen(false)}
-        />
+    <div
+      className={cn(
+        "fixed inset-y-0 left-0 z-50 bg-background border-r transition-all duration-300 flex flex-col",
+        isOpen ? "w-64" : "w-20"
       )}
-
-      {/* Sidebar */}
-      <aside
-        className={cn(
-          "fixed inset-y-0 left-0 z-50 flex flex-col bg-sidebar transition-all duration-300",
-          isOpen ? "w-64" : "w-20",
-          isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
-        )}
-      >
-        {/* Logo */}
-        <div className="flex h-16 items-center justify-between px-4 border-b border-sidebar-border">
-          <div className="flex items-center gap-2">
-            <div className="h-8 w-8 rounded-full bg-secondary flex items-center justify-center">
-              <Gavel className="h-5 w-5 text-primary" />
-            </div>
-            {isOpen && (
-              <span className="justice-flow-logo text-xl font-bold text-sidebar-foreground">
-                JusticeFlow
-              </span>
-            )}
-          </div>
-          <button 
-            className="hidden lg:block text-sidebar-foreground hover:text-secondary"
-            onClick={() => setIsOpen(!isOpen)}
-          >
-            {isOpen ? (
-              <ChevronLeft className="h-5 w-5" />
-            ) : (
-              <ChevronRight className="h-5 w-5" />
-            )}
-          </button>
-        </div>
-
-        {/* Navigation */}
-        <nav className="flex-1 overflow-y-auto py-4 px-3">
-          <div className="space-y-1">
-            <SidebarItem 
-              icon={<LayoutDashboard className="h-5 w-5" />}
-              label="Dashboard"
-              href="/"
-              isActive={pathname === "/"}
-              isOpen={isOpen}
-            />
-            <SidebarItem 
-              icon={<FileText className="h-5 w-5" />}
-              label="Cases"
-              href="/cases"
-              isActive={pathname === "/cases"}
-              isOpen={isOpen}
-            />
-            <SidebarItem 
-              icon={<Calendar className="h-5 w-5" />}
-              label="Schedule"
-              href="/schedule"
-              isActive={pathname === "/schedule"}
-              isOpen={isOpen}
-            />
-            <SidebarItem 
-              icon={<Users className="h-5 w-5" />}
-              label="Personnel"
-              href="/personnel"
-              isActive={pathname === "/personnel"}
-              isOpen={isOpen}
-            />
-            <SidebarItem 
-              icon={<BarChart3 className="h-5 w-5" />}
-              label="Analytics"
-              href="/analytics"
-              isActive={pathname === "/analytics"}
-              isOpen={isOpen}
-            />
-          </div>
+    >
+      <div className="flex h-16 items-center px-4 border-b">
+        <Link to="/" className="flex items-center">
+          {isOpen ? (
+            <>
+              <Scale className="h-6 w-6 text-primary mr-2" />
+              <span className="font-bold text-lg">JusticeFlow</span>
+            </>
+          ) : (
+            <Scale className="h-6 w-6 text-primary mx-auto" />
+          )}
+        </Link>
+      </div>
+      <ScrollArea className="flex-1">
+        <nav className="flex flex-col p-2">
+          {navItems.map((item) => (
+            <Tooltip key={item.href} delayDuration={!isOpen ? 100 : 1000000}>
+              <TooltipTrigger asChild>
+                <Link
+                  to={item.href}
+                  className={cn(
+                    "flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-all hover:bg-accent hover:text-accent-foreground",
+                    location.pathname === item.href
+                      ? "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground"
+                      : "",
+                    !isOpen && "justify-center px-0"
+                  )}
+                >
+                  {item.icon}
+                  {isOpen && <span>{item.title}</span>}
+                </Link>
+              </TooltipTrigger>
+              {!isOpen && <TooltipContent side="right">{item.title}</TooltipContent>}
+            </Tooltip>
+          ))}
         </nav>
-
-        {/* Bottom section */}
-        <div className="border-t border-sidebar-border py-4 px-3">
-          <SidebarItem 
-            icon={<Settings className="h-5 w-5" />}
-            label="Settings"
-            href="/settings"
-            isActive={pathname === "/settings"}
-            isOpen={isOpen}
-          />
-        </div>
-      </aside>
-    </>
+      </ScrollArea>
+      <div className="border-t p-2">
+        <Button
+          variant="ghost"
+          className={cn(
+            "w-full justify-center",
+            isOpen && "justify-between"
+          )}
+          onClick={() => setIsOpen(!isOpen)}
+        >
+          {isOpen ? (
+            <>
+              <span className="sr-only">Collapse</span>
+              <ChevronLeft className="h-5 w-5" />
+            </>
+          ) : (
+            <>
+              <span className="sr-only">Expand</span>
+              <ChevronRight className="h-5 w-5" />
+            </>
+          )}
+        </Button>
+      </div>
+    </div>
   );
 };
 
