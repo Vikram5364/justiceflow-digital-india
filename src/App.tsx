@@ -10,6 +10,8 @@ import Cases from "./pages/Cases";
 import Schedule from "./pages/Schedule";
 import Analytics from "./pages/Analytics";
 import CaseDetails from "./pages/CaseDetails";
+import VirtualCourtroom from "./pages/VirtualCourtroom";
+import PersonalPage from "./pages/PersonalPage";
 
 const queryClient = new QueryClient();
 
@@ -25,6 +27,8 @@ const App = () => (
           <Route path="/cases/:caseId" element={<CaseDetails />} />
           <Route path="/schedule" element={<Schedule />} />
           <Route path="/analytics" element={<Analytics />} />
+          <Route path="/virtual-courtroom" element={<VirtualCourtroom />} />
+          <Route path="/personal" element={<PersonalPage />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
