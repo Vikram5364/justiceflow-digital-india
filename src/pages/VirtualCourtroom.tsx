@@ -1,5 +1,4 @@
-
-import { useState } from "react";
+import { useState, useRef } from "react";
 import DashboardLayout from "@/components/Layout/DashboardLayout";
 import { Button } from "@/components/ui/button";
 import {
@@ -28,7 +27,7 @@ const VirtualCourtroom = () => {
   const [activeTab, setActiveTab] = useState<string>("meeting");
   const [isWaitingRoom, setIsWaitingRoom] = useState(true);
   const [message, setMessage] = useState("");
-  const fileInputRef = useState<HTMLInputElement | null>(null);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   // Mock case data
   const caseDetails = {
