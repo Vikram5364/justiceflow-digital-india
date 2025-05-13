@@ -27,6 +27,8 @@ const VirtualCourtroom = () => {
   const [isSessionActive, setIsSessionActive] = useState(false);
   const [activeTab, setActiveTab] = useState<string>("meeting");
   const [isWaitingRoom, setIsWaitingRoom] = useState(true);
+  const [message, setMessage] = useState("");
+  const fileInputRef = useState<HTMLInputElement | null>(null);
 
   // Mock case data
   const caseDetails = {
@@ -48,6 +50,24 @@ const VirtualCourtroom = () => {
   const endSession = () => {
     setIsSessionActive(false);
     // In a real app, this would close the connection
+  };
+
+  const handleSendMessage = () => {
+    // Handle sending message logic
+    setMessage("");
+  };
+
+  // Define the file input trigger function
+  const triggerFileInput = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
+
+  // Handle file upload
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    // Handle file upload logic
+    console.log("File uploaded:", e.target.files);
   };
 
   return (
@@ -269,8 +289,14 @@ const VirtualCourtroom = () => {
                           type="text"
                           placeholder="Type your message..."
                           className="w-full p-2 pr-12 border rounded-md"
+                          value={message}
+                          onChange={(e) => setMessage(e.target.value)}
                         />
-                        <Button className="absolute right-1 top-1" size="sm">
+                        <Button 
+                          className="absolute right-1 top-1" 
+                          size="sm"
+                          onClick={handleSendMessage}
+                        >
                           Send
                         </Button>
                       </div>
