@@ -12,6 +12,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { toast } from "sonner";
 import {
   Video,
   Phone,
@@ -20,6 +21,8 @@ import {
   FileText,
   Gavel,
   Clock,
+  Upload,
+  Trash,
 } from "lucide-react";
 
 const VirtualCourtroom = () => {
@@ -28,6 +31,7 @@ const VirtualCourtroom = () => {
   const [isWaitingRoom, setIsWaitingRoom] = useState(true);
   const [message, setMessage] = useState("");
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const [uploadedDocuments, setUploadedDocuments] = useState<File[]>([]);
 
   // Mock case data
   const caseDetails = {
@@ -65,8 +69,22 @@ const VirtualCourtroom = () => {
 
   // Handle file upload
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    // Handle file upload logic
-    console.log("File uploaded:", e.target.files);
+    if (e.target.files && e.target.files.length > 0) {
+      const newFiles = Array.from(e.target.files);
+      setUploadedDocuments(prev => [...prev, ...newFiles]);
+      toast.success(`${newFiles.length} document${newFiles.length > 1 ? 's' : ''} uploaded successfully`);
+      
+      // Reset file input
+      if (e.target.value) {
+        e.target.value = '';
+      }
+    }
+  };
+
+  // Remove an uploaded document
+  const removeDocument = (index: number) => {
+    setUploadedDocuments(prev => prev.filter((_, i) => i !== index));
+    toast.info("Document removed");
   };
 
   return (
@@ -305,11 +323,49 @@ const VirtualCourtroom = () => {
 
                 <TabsContent value="documents">
                   <Card>
-                    <CardHeader className="py-3">
+                    <CardHeader className="py-3 flex flex-row justify-between items-center">
                       <CardTitle>Case Documents</CardTitle>
+                      <Button variant="outline" size="sm" onClick={triggerFileInput}>
+                        <Upload className="h-4 w-4 mr-2" />
+                        Upload
+                      </Button>
+                      <input 
+                        type="file"
+                        ref={fileInputRef}
+                        className="hidden"
+                        onChange={handleFileUpload}
+                        accept=".pdf,.doc,.docx,.txt,.jpg,.jpeg,.png"
+                        multiple
+                      />
                     </CardHeader>
                     <CardContent className="p-0">
                       <div className="divide-y">
+                        {/* Uploaded documents */}
+                        {uploadedDocuments.map((doc, index) => (
+                          <div key={index} className="flex items-center justify-between p-3">
+                            <div className="flex items-center">
+                              <FileText className="h-4 w-4 mr-3" />
+                              <div>
+                                <p className="text-sm font-medium truncate max-w-[200px]">{doc.name}</p>
+                                <p className="text-xs text-muted-foreground">
+                                  {(doc.size / 1024).toFixed(1)} KB • Just now
+                                </p>
+                              </div>
+                            </div>
+                            <div className="flex gap-2">
+                              <Button variant="ghost" size="sm">View</Button>
+                              <Button 
+                                variant="ghost" 
+                                size="sm"
+                                onClick={() => removeDocument(index)}
+                              >
+                                <Trash className="h-4 w-4 text-red-500" />
+                              </Button>
+                            </div>
+                          </div>
+                        ))}
+
+                        {/* Existing documents */}
                         <div className="flex items-center justify-between p-3">
                           <div className="flex items-center">
                             <FileText className="h-4 w-4 mr-3" />

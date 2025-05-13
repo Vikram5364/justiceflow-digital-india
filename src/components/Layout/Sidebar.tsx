@@ -77,7 +77,7 @@ const Sidebar = ({ isOpen, setIsOpen }: SidebarProps) => {
           {isOpen ? (
             <>
               <Scale className="h-6 w-6 text-primary mr-2" />
-              <span className="font-bold text-lg">JusticeFlow</span>
+              <span className="font-bold text-lg">Nyay Portal</span>
             </>
           ) : (
             <Scale className="h-6 w-6 text-primary mx-auto" />

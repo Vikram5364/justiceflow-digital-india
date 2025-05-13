@@ -28,7 +28,7 @@ const LegalChatbot = () => {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: "welcome",
-      content: "Welcome to JusticeFlow Legal Assistant. How can I help you today?",
+      content: "Welcome to Nyay Portal Legal Assistant. How can I help you today?",
       sender: "assistant",
       timestamp: new Date(),
     },
@@ -94,6 +94,8 @@ const LegalChatbot = () => {
         responseContent = "Based on the information provided, I found 3 potentially relevant precedents. Would you like me to summarize them?";
       } else if (inputLower.includes("translate") || inputLower.includes("language")) {
         responseContent = "I can translate documents or text into multiple languages. Which language would you like to translate to?";
+      } else if (inputLower.includes("document") || inputLower.includes("review")) {
+        responseContent = "I can review your documents for legal analysis. Please upload them using the attachment button below.";
       }
 
       const assistantMessage: Message = {
@@ -117,12 +119,18 @@ const LegalChatbot = () => {
     if (e.target.files && e.target.files.length > 0) {
       const newFiles = Array.from(e.target.files);
       setFiles(prev => [...prev, ...newFiles]);
-      toast.success(`${newFiles.length} file(s) added`);
+      toast.success(`${newFiles.length} document${newFiles.length > 1 ? 's' : ''} uploaded for review`);
+      
+      // Reset the file input value to allow uploading same file again
+      if (e.target.value) {
+        e.target.value = '';
+      }
     }
   };
 
   const removeFile = (index: number) => {
     setFiles(files.filter((_, i) => i !== index));
+    toast.info("File removed");
   };
 
   const triggerFileInput = () => {
@@ -206,6 +214,7 @@ const LegalChatbot = () => {
             size="icon"
             className="shrink-0"
             onClick={triggerFileInput}
+            title="Upload documents for review"
           >
             <Upload className="h-4 w-4" />
             <input
