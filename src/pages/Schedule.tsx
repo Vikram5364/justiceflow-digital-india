@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import DashboardLayout from "@/components/Layout/DashboardLayout";
 import { Calendar } from "@/components/ui/calendar";
@@ -167,8 +168,12 @@ const Schedule = () => {
                 hasHearing: (date) => hasHearings(date),
               }}
               components={{
-                // Use components prop instead of styles for custom day rendering
                 Day: ({ date, ...props }) => {
+                  // Make sure we're getting actual props and not just the displayMonth
+                  if (!props || typeof props.className === 'undefined') {
+                    return <div>{date.getDate()}</div>;
+                  }
+                  
                   return (
                     <div
                       {...props}

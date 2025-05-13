@@ -1,3 +1,6 @@
+
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import DashboardLayout from "@/components/Layout/DashboardLayout";
 import StatCard from "@/components/Dashboard/StatCard";
 import CaseTable from "@/components/Dashboard/CaseTable";
@@ -19,56 +22,10 @@ import {
   CardDescription, 
   CardContent 
 } from "@/components/ui/card";
+import { toast } from "sonner";
+import { getCases, startRealTimeUpdates } from "@/services/caseService";
 
-// Mock data
-const recentCases = [
-  {
-    id: "1",
-    title: "State of Maharashtra vs. Sharma",
-    number: "CR-2024-0156",
-    priority: "high" as const,
-    status: "active" as const,
-    type: "Criminal",
-    date: "May 12, 2024",
-  },
-  {
-    id: "2",
-    title: "Patel Industries vs. Gujarat Tax Authority",
-    number: "TX-2024-0892",
-    priority: "medium" as const,
-    status: "scheduled" as const,
-    type: "Tax",
-    date: "May 10, 2024",
-  },
-  {
-    id: "3",
-    title: "Sharma vs. Delhi Municipal Corporation",
-    number: "CV-2024-0325",
-    priority: "low" as const,
-    status: "pending" as const,
-    type: "Civil",
-    date: "May 8, 2024",
-  },
-  {
-    id: "4",
-    title: "United Bank vs. Mehta Enterprises",
-    number: "BK-2024-0218",
-    priority: "high" as const,
-    status: "active" as const,
-    type: "Banking",
-    date: "May 7, 2024",
-  },
-  {
-    id: "5",
-    title: "Kumar vs. Kumar (Divorce)",
-    number: "FM-2024-0422",
-    priority: "medium" as const,
-    status: "scheduled" as const,
-    type: "Family",
-    date: "May 5, 2024",
-  },
-];
-
+// Case status data for charts
 const caseStatusData = [
   { name: "Active", value: 42, color: "#3b82f6" },
   { name: "Scheduled", value: 28, color: "#8b5cf6" },
@@ -76,46 +33,114 @@ const caseStatusData = [
   { name: "Closed", value: 37, color: "#10b981" },
 ];
 
-const upcomingHearings = [
-  {
-    id: "1",
-    caseNumber: "CR-2024-0156",
-    caseTitle: "State of Maharashtra vs. Sharma",
-    date: "May 14, 2024",
-    time: "10:30 AM",
-    courtroom: "Courtroom 3A",
-    judge: "Justice A. Patel",
-    type: "Trial",
-  },
-  {
-    id: "2",
-    caseNumber: "TX-2024-0892",
-    caseTitle: "Patel Industries vs. Gujarat Tax Authority",
-    date: "May 15, 2024",
-    time: "2:00 PM",
-    courtroom: "Courtroom 5B",
-    judge: "Justice S. Kumar",
-    type: "Hearing",
-  },
-  {
-    id: "3",
-    caseNumber: "FM-2024-0422",
-    caseTitle: "Kumar vs. Kumar (Divorce)",
-    date: "May 16, 2024",
-    time: "11:00 AM",
-    courtroom: "Courtroom 2C",
-    judge: "Justice M. Reddy",
-    type: "Conference",
-  },
-];
-
 const Dashboard = () => {
+  const navigate = useNavigate();
+  const [recentCases, setRecentCases] = useState([]);
+  const [upcomingHearings, setUpcomingHearings] = useState([]);
+  const [realTimeEnabled, setRealTimeEnabled] = useState(false);
+
+  useEffect(() => {
+    // Get initial data
+    const cases = getCases();
+    setRecentCases(cases.slice(0, 5));
+    
+    // Extract upcoming hearings from cases with nextHearingDate
+    const hearings = cases
+      .filter(c => c.nextHearingDate && c.status !== 'closed')
+      .slice(0, 3)
+      .map(c => ({
+        id: c.id,
+        caseNumber: c.number,
+        caseTitle: c.title,
+        date: c.nextHearingDate?.split(' at')[0] || '',
+        time: c.nextHearingDate?.split(' at')[1]?.trim() || '10:00 AM',
+        courtroom: c.courtroom || 'TBD',
+        judge: c.judge || 'TBD',
+        type: c.type || 'Hearing',
+      }));
+    
+    setUpcomingHearings(hearings);
+
+    // Notify user that real-time updates are available
+    setTimeout(() => {
+      toast.info(
+        "Real-time updates are available for this dashboard", 
+        { 
+          description: "Click 'Enable' to see live case updates.",
+          action: {
+            label: "Enable",
+            onClick: () => {
+              setRealTimeEnabled(true);
+              toast.success("Real-time updates enabled");
+              // Start the real-time updates
+              const cleanup = startRealTimeUpdates(() => {
+                // Refresh data when updates happen
+                const updatedCases = getCases();
+                setRecentCases(updatedCases.slice(0, 5));
+                
+                // Extract updated upcoming hearings
+                const updatedHearings = updatedCases
+                  .filter(c => c.nextHearingDate && c.status !== 'closed')
+                  .slice(0, 3)
+                  .map(c => ({
+                    id: c.id,
+                    caseNumber: c.number,
+                    caseTitle: c.title,
+                    date: c.nextHearingDate?.split(' at')[0] || '',
+                    time: c.nextHearingDate?.split(' at')[1]?.trim() || '10:00 AM',
+                    courtroom: c.courtroom || 'TBD',
+                    judge: c.judge || 'TBD',
+                    type: c.type || 'Hearing',
+                  }));
+                
+                setUpcomingHearings(updatedHearings);
+              });
+              
+              return () => cleanup();
+            }
+          }
+        }
+      );
+    }, 2000);
+    
+    // If real-time is enabled already, start updates
+    if (realTimeEnabled) {
+      const cleanup = startRealTimeUpdates(() => {
+        // Refresh data when updates happen
+        const updatedCases = getCases();
+        setRecentCases(updatedCases.slice(0, 5));
+        
+        // Extract updated upcoming hearings
+        const updatedHearings = updatedCases
+          .filter(c => c.nextHearingDate && c.status !== 'closed')
+          .slice(0, 3)
+          .map(c => ({
+            id: c.id,
+            caseNumber: c.number,
+            caseTitle: c.title,
+            date: c.nextHearingDate?.split(' at')[0] || '',
+            time: c.nextHearingDate?.split(' at')[1]?.trim() || '10:00 AM',
+            courtroom: c.courtroom || 'TBD',
+            judge: c.judge || 'TBD',
+            type: c.type || 'Hearing',
+          }));
+        
+        setUpcomingHearings(updatedHearings);
+      });
+      
+      return () => cleanup();
+    }
+  }, [realTimeEnabled]);
+
   return (
     <DashboardLayout>
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-2xl font-bold">Dashboard</h1>
-          <p className="text-muted-foreground">Welcome back, Justice Patel</p>
+          <p className="text-muted-foreground">
+            Welcome back, Justice Patel
+            {realTimeEnabled && <span className="ml-2 text-green-500">(Live Updates Enabled)</span>}
+          </p>
         </div>
       </div>
 
@@ -158,7 +183,11 @@ const Dashboard = () => {
             {/* Main content */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               <div className="lg:col-span-2 space-y-6">
-                <CaseTable cases={recentCases} />
+                <CaseTable 
+                  cases={recentCases} 
+                  title="Recent Cases"
+                  description={realTimeEnabled ? "Live updates enabled" : "Review and manage your most recent cases"}
+                />
               </div>
 
               <div className="space-y-6">

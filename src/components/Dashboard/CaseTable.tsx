@@ -67,6 +67,10 @@ const CaseTable = ({
 }: CaseTableProps) => {
   const navigate = useNavigate();
 
+  const handleCaseClick = (caseId: string) => {
+    navigate(`/cases/${caseId}`);
+  };
+
   return (
     <Card>
       <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
@@ -103,7 +107,9 @@ const CaseTable = ({
                 <tr key={caseItem.id} className="border-b last:border-0">
                   <td className="py-3">
                     <div>
-                      <div className="font-medium">{caseItem.title}</div>
+                      <div className="font-medium cursor-pointer hover:text-primary" onClick={() => handleCaseClick(caseItem.id)}>
+                        {caseItem.title}
+                      </div>
                       <div className="text-muted-foreground text-xs">
                         #{caseItem.number}
                       </div>
