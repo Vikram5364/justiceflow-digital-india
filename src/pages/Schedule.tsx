@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import DashboardLayout from "@/components/Layout/DashboardLayout";
 import { Calendar } from "@/components/ui/calendar";
@@ -21,7 +22,9 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { ChevronLeft, ChevronRight, Plus } from "lucide-react";
-import { DayProps } from "react-day-picker";
+
+// Import correct DayPicker component types
+import { DayContentProps } from "react-day-picker";
 
 // Mock data
 const hearings = [
@@ -158,16 +161,14 @@ const Schedule = () => {
                     hasHearing: (date) => hasHearings(date),
                   }}
                   components={{
-                    Day: (props: DayProps) => {
-                      // Check if props have the necessary date property
+                    Day: (props: DayContentProps) => {
                       if (!props || !props.date) {
                         return null;
                       }
                       
                       return (
                         <div
-                          {...props}
-                          className={cn(props.className, "relative")}
+                          className={cn("relative", props.className)}
                         >
                           {props.children}
                           {hasHearings(props.date) && (

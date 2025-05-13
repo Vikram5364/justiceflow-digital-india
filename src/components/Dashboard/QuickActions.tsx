@@ -39,15 +39,15 @@ const QuickActions = () => {
           <Plus className="h-5 w-5" />
           <span>New Case</span>
         </Button>
-        <Button 
-          variant="outline" 
-          className="h-auto flex flex-col p-4 items-center gap-2 w-[calc(50%-4px)]"
-          as={Link}
-          to="/schedule"
-        >
-          <Calendar className="h-5 w-5" />
-          <span>Schedule Hearing</span>
-        </Button>
+        <Link to="/schedule" className="w-[calc(50%-4px)]">
+          <Button 
+            variant="outline" 
+            className="h-auto flex flex-col p-4 items-center gap-2 w-full"
+          >
+            <Calendar className="h-5 w-5" />
+            <span>Schedule Hearing</span>
+          </Button>
+        </Link>
         <Button 
           variant="outline" 
           className="h-auto flex flex-col p-4 items-center gap-2 w-[calc(50%-4px)]"
@@ -64,24 +64,24 @@ const QuickActions = () => {
           <Gavel className="h-5 w-5" />
           <span>Record Judgment</span>
         </Button>
-        <Button 
-          variant="outline" 
-          className="h-auto flex flex-col p-4 items-center gap-2 w-[calc(50%-4px)]"
-          as={Link}
-          to="/virtual-courtroom"
-        >
-          <Video className="h-5 w-5" />
-          <span>Virtual Courtroom</span>
-        </Button>
-        <Button 
-          variant="outline" 
-          className="h-auto flex flex-col p-4 items-center gap-2 w-[calc(50%-4px)]"
-          as={Link}
-          to="/personal"
-        >
-          <User className="h-5 w-5" />
-          <span>My Portal</span>
-        </Button>
+        <Link to="/virtual-courtroom" className="w-[calc(50%-4px)]">
+          <Button 
+            variant="outline" 
+            className="h-auto flex flex-col p-4 items-center gap-2 w-full"
+          >
+            <Video className="h-5 w-5" />
+            <span>Virtual Courtroom</span>
+          </Button>
+        </Link>
+        <Link to="/personal" className="w-[calc(50%-4px)]">
+          <Button 
+            variant="outline" 
+            className="h-auto flex flex-col p-4 items-center gap-2 w-full"
+          >
+            <User className="h-5 w-5" />
+            <span>My Portal</span>
+          </Button>
+        </Link>
       </CardContent>
     </Card>
   );
