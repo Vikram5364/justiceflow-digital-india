@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import DashboardLayout from "@/components/Layout/DashboardLayout";
 import { Calendar } from "@/components/ui/calendar";
@@ -21,6 +20,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { ChevronLeft, ChevronRight, Plus } from "lucide-react";
+import { DayContent, DayContentProps } from "react-day-picker";
 
 // Mock data
 const hearings = [
@@ -168,19 +168,18 @@ const Schedule = () => {
                 hasHearing: (date) => hasHearings(date),
               }}
               components={{
-                Day: ({ date, ...props }) => {
-                  // Make sure we're getting actual props and not just the displayMonth
-                  if (!props || typeof props.className === 'undefined') {
-                    return <div>{date.getDate()}</div>;
+                Day: (props: DayContentProps) => {
+                  // Check if props have the necessary date property
+                  if (!props || !props.date) {
+                    return <DayContent {...props} />;
                   }
                   
                   return (
                     <div
-                      {...props}
                       className={cn(props.className, "relative")}
                     >
                       {props.children}
-                      {hasHearings(date) && (
+                      {hasHearings(props.date) && (
                         <div className="absolute w-1 h-1 bg-primary rounded-full bottom-1 left-1/2 transform -translate-x-1/2" />
                       )}
                     </div>
