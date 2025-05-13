@@ -1,4 +1,3 @@
-
 import DashboardLayout from "@/components/Layout/DashboardLayout";
 import StatCard from "@/components/Dashboard/StatCard";
 import CaseTable from "@/components/Dashboard/CaseTable";
@@ -12,6 +11,14 @@ import {
   FileText 
 } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { 
+  Card, 
+  CardHeader, 
+  CardFooter, 
+  CardTitle, 
+  CardDescription, 
+  CardContent 
+} from "@/components/ui/card";
 
 // Mock data
 const recentCases = [
