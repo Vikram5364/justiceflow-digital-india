@@ -205,7 +205,7 @@ const LegalChatbot = () => {
             variant="outline"
             size="icon"
             className="shrink-0"
-            onClick={triggerFileUpload}
+            onClick={triggerFileInput}
           >
             <Upload className="h-4 w-4" />
             <input
