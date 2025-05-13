@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import DashboardLayout from "@/components/Layout/DashboardLayout";
 import { Calendar } from "@/components/ui/calendar";
@@ -167,25 +166,20 @@ const Schedule = () => {
               modifiers={{
                 hasHearing: (date) => hasHearings(date),
               }}
-              styles={{
-                day: (date) => {
-                  if (hasHearings(date)) {
-                    return {
-                      position: "relative",
-                      "&::after": {
-                        content: '""',
-                        position: "absolute",
-                        width: "4px",
-                        height: "4px",
-                        borderRadius: "50%",
-                        bottom: "2px",
-                        left: "50%",
-                        transform: "translateX(-50%)",
-                        backgroundColor: "hsl(var(--primary))",
-                      },
-                    };
-                  }
-                  return {};
+              components={{
+                // Use components prop instead of styles for custom day rendering
+                Day: ({ date, ...props }) => {
+                  return (
+                    <div
+                      {...props}
+                      className={cn(props.className, "relative")}
+                    >
+                      {props.children}
+                      {hasHearings(date) && (
+                        <div className="absolute w-1 h-1 bg-primary rounded-full bottom-1 left-1/2 transform -translate-x-1/2" />
+                      )}
+                    </div>
+                  );
                 },
               }}
             />
